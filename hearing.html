@@ -197,26 +197,26 @@
 
             try {
                 // --- バックエンドAPI呼び出し ---
-                // const response = await fetch('/api/chat', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({
-                //         message: messageText,
-                //         currentSessionHistory: currentSessionHistory.slice(0, -1) // 今回のメッセージは除く
-                //     }),
-                // });
+                const response = await fetch('http://localhost:5000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: messageText,
+                        currentSessionHistory: currentSessionHistory.slice(0, -1)
+                    }),
+                });
 
-                // if (!response.ok) {
-                //     throw new Error(`APIエラー: ${response.status}`);
-                // }
-                // const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(`APIエラー: ${response.status}`);
+                }
+                const data = await response.json();
                 // --- バックエンドAPI呼び出しここまで ---
 
                 // --- ダミーAPI応答 (開発用) ---
-                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000)); // 遅延を模倣
-                const data = getDummyApiResponse(messageText, currentSessionHistory);
+                // await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000)); // 遅延を模倣
+                // const data = getDummyApiResponse(messageText, currentSessionHistory);
                 // --- ダミーAPI応答ここまで ---
 
 
