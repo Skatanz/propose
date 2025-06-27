@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI設備仕様コンシェルジュ - チャット</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            padding: 0.8em 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        .chat-container {
+            flex-grow: 1;
+            width: 80%;
+            max-width: 800px;
+            margin: 1em auto;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .user-message {
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        .ai-message {
+            background-color: #e9e9eb;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .chat-input-area textarea {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            resize: none;
+            min-height: 20px; /* 1行分の高さ */
+            max-height: 100px; /* 5行分程度の高さ */
+            overflow-y: auto; /* 内容が増えたらスクロール */
+            font-size: 1em;
+            line-height: 1.4;
+            margin-right: 10px;
+        }
+        .chat-input-area button {
+            background-color: #ff4500; /* 強調色: 赤 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .chat-input-area button:hover {
+            background-color: #cc3700;
+        }
+        .typing-indicator {
+            display: none; /* 初期状態では非表示 */
+            padding: 10px 20px;
+            color: #777;
+            font-style: italic;
+        }
+        /* 初期メッセージ用のスタイル */
+        .initial-ai-message {
+            background-color: #d1e7fd; /* 少し薄い青 */
+            border: 1px solid #005aaa;
+        }
+        .initial-ai-message strong {
+            color: #004085; /* やや濃い青 */
+        }
+        .example-buttons {
+            margin-top: 10px;
+        }
+        .example-buttons button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            color: #005aaa;
+            padding: 8px 12px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .example-buttons button:hover {
+            background-color: #e0e0e0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 0.8em 0;
+            background-color: #333;
+            color: white;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI設備仕様コンシェルジュ</h1>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-history" id="chatHistory">
+            <!-- ダミーの初期AIメッセージ -->
+            <div class="chat-message ai-message initial-ai-message">
+                <p>こんにちは！AI設備仕様コンシェルジュへようこそ。</p>
+                <p>どのような設備をご検討中ですか？<br>例えば、<strong>「〇〇部品の組立を自動化したい」「検査工程の精度を上げたい」</strong>など、お気軽にご入力ください。</p>
+                <p>もし具体的なイメージがまだ固まっていなければ、以下のボタンから選択して会話を始めることもできます。</p>
+                <div class="example-buttons">
+                    <button onclick="sendPresetMessage('組立作業の自動化について相談したい')">組立作業の自動化</button>
+                    <button onclick="sendPresetMessage('検査工程の改善について相談したい')">検査工程の改善</button>
+                    <button onclick="sendPresetMessage('新しい設備の導入を検討している')">新規設備導入</button>
+                </div>
+            </div>
+            <!-- <div class="chat-message user-message">
+                ユーザーからのメッセージ例です。
+            </div>
+            <div class="chat-message ai-message">
+                AIからの返信例です。改行も<br>このように入ります。
+            </div> -->
+        </div>
+        <div class="typing-indicator" id="typingIndicator">AIが入力中です...</div>
+        <div class="chat-input-area">
+            <textarea id="userInput" placeholder="メッセージを入力..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
+            <button id="sendButton" onclick="sendMessage()">送信</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 企業名</p>
+    </footer>
+
+    <script>
+        const chatHistory = document.getElementById('chatHistory');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        let currentSessionHistory = []; // 現在のセッションの会話履歴を保持
+
+        // 初期メッセージのボタンからメッセージを送信する関数
+        function sendPresetMessage(message) {
+            userInput.value = message;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const messageText = userInput.value.trim();
+            if (messageText === '') return;
+
+            appendMessage(messageText, 'user');
+            currentSessionHistory.push({ role: 'user', parts: [{ text: messageText }] });
+            userInput.value = '';
+            autoResizeTextarea(userInput); // 送信後テキストエリアをリサイズ
+            userInput.focus();
+            showTypingIndicator(true);
+
+            try {
+                // --- バックエンドAPI呼び出し ---
+                // const response = await fetch('/api/chat', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({
+                //         message: messageText,
+                //         currentSessionHistory: currentSessionHistory.slice(0, -1) // 今回のメッセージは除く
+                //     }),
+                // });
+
+                // if (!response.ok) {
+                //     throw new Error(`APIエラー: ${response.status}`);
+                // }
+                // const data = await response.json();
+                // --- バックエンドAPI呼び出しここまで ---
+
+                // --- ダミーAPI応答 (開発用) ---
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000)); // 遅延を模倣
+                const data = getDummyApiResponse(messageText, currentSessionHistory);
+                // --- ダミーAPI応答ここまで ---
+
+
+                if (data.aiResponse) {
+                    appendMessage(data.aiResponse, 'ai');
+                    currentSessionHistory.push({ role: 'model', parts: [{ text: data.aiResponse }] });
+                }
+
+                if (data.extractedInfo) {
+                    console.log("AIからの抽出情報:", data.extractedInfo); // 抽出情報をコンソールに表示
+                    // 提案書作成に進むかどうかの判断
+                    if (data.extractedInfo.isComplete === true) {
+                        localStorage.setItem('aiChatSummary', JSON.stringify(data.extractedInfo));
+                        // 収集した情報を元に提案書ページへ遷移するなどの処理
+                        appendMessage("ヒアリングが完了しました。ありがとうございます。簡易提案書を作成しますので、少々お待ちください...", "ai");
+                        setTimeout(() => {
+                             window.location.href = 'result.html';
+                        }, 2000);
+                    }
+                }
+
+            } catch (error) {
+                console.error('メッセージ送信エラー:', error);
+                appendMessage(`申し訳ありません、エラーが発生しました。(${error.message})`, 'ai');
+            } finally {
+                showTypingIndicator(false);
+            }
+        }
+
+        // 開発用のダミーAPI応答を生成する関数
+        function getDummyApiResponse(userMessage, history) {
+            let aiResponse = `ご入力ありがとうございます。「${userMessage}」についてですね。`;
+            let extractedInfo = {
+                purposeAndWork: history.find(h => h.role === 'model' && h.parts[0].text.includes("目的とワーク"))?.parts[0].text.split("：")[1]?.trim() || null,
+                taktAndAutomation: history.find(h => h.role === 'model' && h.parts[0].text.includes("タクトと自動化"))?.parts[0].text.split("：")[1]?.trim() || null,
+                mainProcess: null,
+                environmentAndUtilities: null,
+                issuesAndBudget: null,
+                isComplete: false
+            };
+
+            if (userMessage.toLowerCase().includes("完了") || userMessage.toLowerCase().includes("終わり")) {
+                aiResponse = "ヒアリングのご協力ありがとうございました。全ての情報が揃いましたので、簡易提案書を作成します。";
+                extractedInfo.isComplete = true;
+                extractedInfo.purposeAndWork = extractedInfo.purposeAndWork || "〇〇部品の組立";
+                extractedInfo.taktAndAutomation = extractedInfo.taktAndAutomation || "全自動でタクト10秒";
+                extractedInfo.mainProcess = "主要加工はプレス、重要機能は画像検査";
+                extractedInfo.environmentAndUtilities = "一般工場、電源AC200V、エア圧0.5MPa";
+                extractedInfo.issuesAndBudget = "課題は生産性向上、予算500万円";
+                extractedInfo.deviceName = "AI提案型 自動組立機デモ"; // result.htmlで使うための仮データ
+                extractedInfo.overview = `ユーザー様との対話に基づき、${extractedInfo.purposeAndWork}を目的とし、${extractedInfo.taktAndAutomation}を目指す設備を提案します。`;
+                extractedInfo.mainFunctions = [extractedInfo.mainProcess, "自動部品供給", "完成品自動排出"];
+                extractedInfo.environment = [extractedInfo.environmentAndUtilities];
+                extractedInfo.expectations = extractedInfo.issuesAndBudget;
+                extractedInfo.budget = "500万円";
+
+
+            } else if (!extractedInfo.purposeAndWork && (userMessage.includes("組立") || userMessage.includes("検査") || userMessage.includes("自動化"))) {
+                aiResponse += "\nまず、この設備で実現したい「目的」と、扱いたい「ワーク（製品）」について具体的に教えていただけますか？ (例: 基板への部品実装、金属部品の外観検査など)";
+            } else if (extractedInfo.purposeAndWork && !extractedInfo.taktAndAutomation) {
+                aiResponse += "\nありがとうございます。次に、目標とする「生産量（例：1時間あたり何個）」または「タクトタイム（1つあたり何秒）」と、ご希望の「自動化レベル（全自動、半自動、手動など）」を教えてください。";
+            } else if (extractedInfo.taktAndAutomation && !extractedInfo.mainProcess) {
+                aiResponse += "\n承知いたしました。では、この設備で行う「最も主要となる加工や検査の内容」と、その他に「重要な機能」があれば教えてください。(例: ネジ締め、溶接、寸法測定、NG品排出など)";
+            } else if (extractedInfo.mainProcess && !extractedInfo.environmentAndUtilities) {
+                aiResponse += "\n設備の「設置場所の環境（クリーンルーム有無、広さなど）」や「ユーティリティ（電源、エア圧など）」について特別な条件はありますか？";
+            } else if (extractedInfo.environmentAndUtilities && !extractedInfo.issuesAndBudget) {
+                 aiResponse += "\n最後に、現状どのような「課題」をお持ちで、この設備でどう解決したいか、また、おおよその「ご予算感」があればお聞かせいただけますでしょうか？";
+            } else {
+                aiResponse += "\n他に何か補足事項やご要望はございますか？なければ「完了」と入力してください。";
+                // 仮に全項目埋まったことにする（実際のAIならもっと賢く判断）
+                if(extractedInfo.purposeAndWork && extractedInfo.taktAndAutomation && extractedInfo.mainProcess && extractedInfo.environmentAndUtilities && extractedInfo.issuesAndBudget) {
+                     // extractedInfo.isComplete = true; // 完了と入力されるまで待つ
+                }
+            }
+            return { aiResponse, extractedInfo };
+        }
+
+
+        function appendMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('ai-message');
+            }
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>'); // 改行を<br>に変換
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight; // 自動スクロール
+        }
+
+        function showTypingIndicator(isTyping) {
+            typingIndicator.style.display = isTyping ? 'block' : 'none';
+            if(isTyping) chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto'; // 一旦高さをリセット
+            textarea.style.height = textarea.scrollHeight + 'px'; // 内容に合わせて高さを設定
+        }
+
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Enterキーのみでの改行を防ぐ
+                sendMessage();
+            }
+        });
+
+        // 初期フォーカス
+        userInput.focus();
+    </script>
+</body>
+</html>

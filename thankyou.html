@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ完了 - AI設備仕様診断</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        header {
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            width: 100%;
+            position: absolute; /* 上部固定 */
+            top: 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 100px; /* ヘッダーの高さ分を考慮 */
+            padding: 3em 2em;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .thankyou-icon {
+            font-size: 3em;
+            color: #005aaa; /* キーカラー: 青 */
+            margin-bottom: 0.5em;
+        }
+        .thankyou-title {
+            font-size: 1.8em;
+            color: #005aaa; /* キーカラー: 青 */
+            margin-bottom: 0.8em;
+        }
+        .message {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 1em;
+        }
+        .links {
+            margin-top: 2em;
+        }
+        .links a {
+            display: inline-block;
+            margin: 0.5em 1em;
+            padding: 0.8em 1.5em;
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .links a:hover {
+            background-color: #004488;
+        }
+        .links .home-link {
+            background-color: #ff4500; /* 強調色: 赤 */
+        }
+        .links .home-link:hover {
+            background-color: #cc3700;
+        }
+        footer {
+            text-align: center;
+            padding: 1em 0;
+            background-color: #333;
+            color: white;
+            position: fixed; /* 下部固定 */
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI設備仕様診断</h1>
+    </header>
+
+    <div class="container">
+        <div class="thankyou-icon">✓</div> <!-- シンプルなチェックマークアイコン -->
+        <h2 class="thankyou-title">お問い合わせありがとうございます！</h2>
+        <p class="message">
+            担当者より<strong>3営業日以内</strong>にご連絡いたします。<br>
+            少々お待ちくださいませ。
+        </p>
+        <p class="message">
+            ご入力いただいたメールアドレスに、簡易提案書の控え（またはお問い合わせ内容の確認メール）をお送りいたしましたのでご確認ください。
+        </p>
+        <div class="links">
+            <a href="index.html" class="home-link">トップページへ戻る</a>
+            <a href="/company-info.html">会社案内を見る</a> <!-- 仮のリンク -->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 企業名</p>
+    </footer>
+
+    <script>
+        // 必要に応じて、前のページから渡された情報を表示するなどの処理をここに記述
+        // 例: const userEmail = new URLSearchParams(window.location.search).get('email');
+        // if (userEmail) {
+        //     const emailMessage = document.createElement('p');
+        //     emailMessage.textContent = `確認メールは ${userEmail} に送信されました。`;
+        //     document.querySelector('.container').insertBefore(emailMessage, document.querySelector('.links'));
+        // }
+    </script>
+</body>
+</html>
