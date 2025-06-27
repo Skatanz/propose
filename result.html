@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡易提案書 - AI設備仕様診断</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        header {
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .logo-container {
+            text-align: center;
+            padding: 1em 0;
+        }
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 1em auto;
+            padding: 2em;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .proposal-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #005aaa; /* キーカラー: 青 */
+            margin-bottom: 1em;
+        }
+        .proposal-section {
+            margin-bottom: 1.5em;
+            padding-bottom: 1.5em;
+            border-bottom: 1px solid #eee;
+        }
+        .proposal-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .proposal-section h3 {
+            font-size: 1.3em;
+            color: #005aaa;
+            margin-bottom: 0.7em;
+            border-left: 4px solid #005aaa;
+            padding-left: 0.5em;
+        }
+        .proposal-section p, .proposal-section ul {
+            margin-left: 1em;
+            line-height: 1.6;
+        }
+        .proposal-section ul {
+            list-style: disc;
+            padding-left: 1.5em;
+        }
+        .next-step-info {
+            background-color: #e7f3fe;
+            border-left: 5px solid #2196F3; /* 明るい青 */
+            padding: 1em;
+            margin-top: 2em;
+            border-radius: 4px;
+        }
+        .next-step-info p {
+            margin: 0.5em 0;
+        }
+        .cta-section {
+            text-align: center;
+            margin-top: 2em;
+        }
+        .cta-button {
+            display: inline-block;
+            margin: 0.5em;
+            padding: 0.8em 1.5em;
+            background-color: #ff4500; /* 強調色: 赤 */
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #cc3700;
+        }
+        .contact-form-section {
+            margin-top: 2.5em;
+            padding-top: 1.5em;
+            border-top: 1px dashed #ccc;
+        }
+        .contact-form-section h3 {
+            text-align: center;
+            font-size: 1.4em;
+            color: #005aaa;
+            margin-bottom: 1em;
+        }
+        .form-group {
+            margin-bottom: 1em;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 0.5em;
+        }
+        .form-group .required-mark {
+            color: #ff4500; /* 強調色: 赤 */
+            font-size: 0.9em;
+            margin-left: 0.2em;
+        }
+        .submit-button {
+            display: block;
+            width: 50%;
+            margin: 1.5em auto 0;
+            padding: 1em;
+            background-color: #005aaa; /* キーカラー: 青 */
+            color: white;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            background-color: #004488;
+        }
+        .pdf-download-btn {
+            background-color: #4CAF50; /* 緑系 */
+            margin-left: 10px;
+        }
+         .pdf-download-btn:hover {
+            background-color: #388E3C;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1em 0;
+            background-color: #333;
+            color: white;
+            margin-top: 2em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI設備仕様診断</h1>
+    </header>
+
+    <div class="logo-container">
+        <!-- ここに企業ロゴを配置 (例) -->
+        <!-- <img src="path/to/your-logo.png" alt="企業ロゴ"> -->
+        <p style="font-size:1.5em; color: #005aaa; font-weight:bold;">[貴社ロゴ]</p>
+    </div>
+
+    <div class="container">
+        <h2 class="proposal-title">あなたのための簡易提案書ができました！</h2>
+
+        <div class="proposal-section">
+            <h3>設備名（仮称）</h3>
+            <p id="proposalDeviceName">AI駆動型自動〇〇組立装置</p>
+        </div>
+
+        <div class="proposal-section">
+            <h3>設備概要</h3>
+            <p id="proposalOverview">ご要望いただいた〇〇部品の自動組立を目的とし、時間あたりXXX個の生産能力（タクトタイムX秒）を持つ全自動設備として構想します。</p>
+        </div>
+
+        <div class="proposal-section">
+            <h3>主要機能</h3>
+            <ul id="proposalMainFunctions">
+                <li>部品Aと部品Bの自動供給機能</li>
+                <li>高精度位置決めとプレスによる嵌合（かんごう）</li>
+                <li>完成品の自動排出機能</li>
+                <li>オプション：画像検査による組立後チェック</li>
+            </ul>
+        </div>
+
+        <div class="proposal-section">
+            <h3>設置環境・ユーティリティ</h3>
+            <ul id="proposalEnvironment">
+                <li>設置場所：一般工場内（クリーン度指定なし）</li>
+                <li>想定スペース：W2000mm x D1500mm x H1800mm</li>
+                <li>電源：三相200V</li>
+                <li>空圧：0.5MPa以上供給可能なこと</li>
+            </ul>
+        </div>
+
+        <div class="proposal-section">
+            <h3>お客様の期待・課題（AIによる要約）</h3>
+            <p id="proposalExpectations">現在の手作業による組立では、生産効率の限界と作業者による品質のばらつきが課題です。本設備の導入により、生産性をX倍に向上させ、不良率をY%以下に抑えることを期待されています。</p>
+        </div>
+
+        <div class="proposal-section">
+            <h3>想定される予算感</h3>
+            <p id="proposalBudget">約XXX万円〜XXX万円（詳細仕様により変動します）</p>
+        </div>
+
+        <div class="next-step-info">
+            <p><strong>次ステップのご提案</strong></p>
+            <p>上記内容は、お客様とのチャットでいただいた情報に基づくAIによる簡易提案です。より詳細な仕様や具体的な解決策については、担当者より直接ご連絡させていただき、改めて詳細ヒアリングの機会をいただけますと幸いです。</p>
+        </div>
+
+        <div class="cta-section">
+            <button type="button" class="cta-button" onclick="scrollToForm()">この提案書について詳しく相談する</button>
+            <button type="button" class="cta-button pdf-download-btn" onclick="downloadPDF()">提案書をPDFでダウンロード</button>
+        </div>
+
+        <div class="contact-form-section" id="contactFormSection">
+            <h3>詳細ヒアリングお申し込みフォーム</h3>
+            <form id="contactForm" action="thankyou.html" method="POST">
+                <div class="form-group">
+                    <label for="name">氏名<span class="required-mark">*</span></label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="company">会社名<span class="required-mark">*</span></label>
+                    <input type="text" id="company" name="company" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">メールアドレス<span class="required-mark">*</span></label>
+                    <input type="text" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">電話番号</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
+                    <label for="privacyPolicy">個人情報保護方針に同意する<span class="required-mark">*</span></label>
+                </div>
+                <button type="submit" class="submit-button">送信して詳細ヒアリングを申し込む</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 企業名</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // localStorageからチャットで収集した情報を取得
+            const collectedData = JSON.parse(localStorage.getItem('aiChatSummary'));
+
+            if (collectedData) {
+                document.getElementById('proposalDeviceName').textContent = collectedData.deviceName || 'AIによる設備名称（仮）';
+                document.getElementById('proposalOverview').textContent = collectedData.overview || 'AIによる設備概要（チャット内容に基づきます）';
+
+                const mainFunctionsUl = document.getElementById('proposalMainFunctions');
+                mainFunctionsUl.innerHTML = ''; // デフォルトをクリア
+                if (collectedData.mainFunctions && Array.isArray(collectedData.mainFunctions)) {
+                    collectedData.mainFunctions.forEach(func => {
+                        const li = document.createElement('li');
+                        li.textContent = func;
+                        mainFunctionsUl.appendChild(li);
+                    });
+                } else if (collectedData.mainProcess) { // 後方互換性または単一文字列の場合
+                     const li = document.createElement('li');
+                     li.textContent = collectedData.mainProcess;
+                     mainFunctionsUl.appendChild(li);
+                } else {
+                    mainFunctionsUl.innerHTML = '<li>主要機能に関する情報がチャットから取得できませんでした。</li>';
+                }
+
+                const environmentUl = document.getElementById('proposalEnvironment');
+                environmentUl.innerHTML = ''; // デフォルトをクリア
+                 if (collectedData.environment && Array.isArray(collectedData.environment)) {
+                    collectedData.environment.forEach(env => {
+                        const li = document.createElement('li');
+                        li.textContent = env;
+                        environmentUl.appendChild(li);
+                    });
+                } else if (collectedData.environmentAndUtilities) { // 後方互換性または単一文字列の場合
+                     const li = document.createElement('li');
+                     li.textContent = collectedData.environmentAndUtilities;
+                     environmentUl.appendChild(li);
+                } else {
+                    environmentUl.innerHTML = '<li>設置環境・ユーティリティに関する情報がチャットから取得できませんでした。</li>';
+                }
+
+                document.getElementById('proposalExpectations').textContent = collectedData.expectations || 'お客様の期待・課題（チャット内容に基づきます）';
+                document.getElementById('proposalBudget').textContent = collectedData.budget || '予算感（チャット内容に基づきます）';
+            } else {
+                // localStorageにデータがない場合のフォールバック処理
+                document.getElementById('proposalDeviceName').textContent = 'チャット情報なし';
+                document.getElementById('proposalOverview').textContent = 'チャット情報が取得できませんでした。お手数ですが、再度ヒアリングをお試しください。';
+                // 他の項目も同様にデフォルトまたはエラーメッセージを設定
+            }
+        });
+
+        function scrollToForm() {
+            document.getElementById('contactFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadPDF() {
+            // PDFダウンロード機能の実装 (例: jsPDFライブラリなどを使用)
+            alert('PDFダウンロード機能は現在準備中です。');
+            // window.print(); // 簡易的な代替案として印刷ダイアログ
+        }
+
+        // フォーム送信時の処理（バリデーションなど）
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            let isValid = true;
+            const requiredFields = ['name', 'company', 'email'];
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = '#ff4500'; // 強調色でボーダー
+                } else {
+                    field.style.borderColor = '#ccc';
+                }
+            });
+
+            const privacyPolicy = document.getElementById('privacyPolicy');
+            if (!privacyPolicy.checked) {
+                isValid = false;
+                privacyPolicy.parentElement.style.color = '#ff4500'; // ラベルを赤く
+            } else {
+                privacyPolicy.parentElement.style.color = '#333';
+            }
+
+            if (!isValid) {
+                alert('赤枠の必須項目を入力し、個人情報保護方針に同意してください。');
+                event.preventDefault(); // 送信を中止
+            } else {
+                // ここでバックエンドにフォームデータを送信する処理を実際には行う
+                // 今回は thankyou.html へ遷移するだけ
+                alert('お申し込みありがとうございます。\n（実際にはここでデータが送信され、thankyou.htmlへ遷移します）');
+                // localStorage.removeItem('aiChatSummary'); // 送信後、不要ならクリア
+            }
+        });
+    </script>
+</body>
+</html>
