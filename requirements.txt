@@ -1,0 +1,6 @@
+Flask>=2.0
+google-generativeai>=0.3
+python-dotenv>=0.19
+psycopg2-binary>=2.9
+# Gunicorn is recommended for production, but not strictly required for development
+gunicorn>=20.0

@@ -177,6 +177,7 @@
         const sendButton = document.getElementById('sendButton');
         const typingIndicator = document.getElementById('typingIndicator');
         let currentSessionHistory = []; // 現在のセッションの会話履歴を保持
+        let currentSessionId = null; // バックエンドと連携するためのセッションID
 
         // 初期メッセージのボタンからメッセージを送信する関数
         function sendPresetMessage(message) {
@@ -197,28 +198,37 @@
 
             try {
                 // --- バックエンドAPI呼び出し ---
-                // const response = await fetch('/api/chat', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({
-                //         message: messageText,
-                //         currentSessionHistory: currentSessionHistory.slice(0, -1) // 今回のメッセージは除く
-                //     }),
-                // });
+                const requestBody = {
+                    message: messageText,
+                    currentSessionHistory: currentSessionHistory.slice(0, -1) // 今回のユーザーメッセージは除く
+                };
+                if (currentSessionId) { // 2回目以降のリクエストにはsessionIdを含める
+                    requestBody.sessionId = currentSessionId;
+                }
 
-                // if (!response.ok) {
-                //     throw new Error(`APIエラー: ${response.status}`);
-                // }
-                // const data = await response.json();
+                const response = await fetch('http://localhost:5000/api/chat', { // URLをバックエンドに合わせる
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: "不明なエラーが発生しました。" })); // エラーレスポンスがJSONでない場合も考慮
+                    throw new Error(`APIエラー: ${response.status} - ${errorData.error || errorData.detail || response.statusText}`);
+                }
+                const data = await response.json();
                 // --- バックエンドAPI呼び出しここまで ---
 
-                // --- ダミーAPI応答 (開発用) ---
-                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000)); // 遅延を模倣
-                const data = getDummyApiResponse(messageText, currentSessionHistory);
+                // --- ダミーAPI応答 (開発用) はコメントアウトまたは削除 ---
+                // await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+                // const data = getDummyApiResponse(messageText, currentSessionHistory);
                 // --- ダミーAPI応答ここまで ---
 
+                if (data.sessionId && !currentSessionId) {
+                    currentSessionId = data.sessionId; // バックエンドから返されたsessionIdを保存
+                }
 
                 if (data.aiResponse) {
                     appendMessage(data.aiResponse, 'ai');
@@ -229,7 +239,8 @@
                     console.log("AIからの抽出情報:", data.extractedInfo); // 抽出情報をコンソールに表示
                     // 提案書作成に進むかどうかの判断
                     if (data.extractedInfo.isComplete === true) {
-                        localStorage.setItem('aiChatSummary', JSON.stringify(data.extractedInfo));
+                        const summaryToStore = { ...data.extractedInfo, sessionId: currentSessionId };
+                        localStorage.setItem('aiChatSummary', JSON.stringify(summaryToStore));
                         // 収集した情報を元に提案書ページへ遷移するなどの処理
                         appendMessage("ヒアリングが完了しました。ありがとうございます。簡易提案書を作成しますので、少々お待ちください...", "ai");
                         setTimeout(() => {
@@ -246,54 +257,7 @@
             }
         }
 
-        // 開発用のダミーAPI応答を生成する関数
-        function getDummyApiResponse(userMessage, history) {
-            let aiResponse = `ご入力ありがとうございます。「${userMessage}」についてですね。`;
-            let extractedInfo = {
-                purposeAndWork: history.find(h => h.role === 'model' && h.parts[0].text.includes("目的とワーク"))?.parts[0].text.split("：")[1]?.trim() || null,
-                taktAndAutomation: history.find(h => h.role === 'model' && h.parts[0].text.includes("タクトと自動化"))?.parts[0].text.split("：")[1]?.trim() || null,
-                mainProcess: null,
-                environmentAndUtilities: null,
-                issuesAndBudget: null,
-                isComplete: false
-            };
-
-            if (userMessage.toLowerCase().includes("完了") || userMessage.toLowerCase().includes("終わり")) {
-                aiResponse = "ヒアリングのご協力ありがとうございました。全ての情報が揃いましたので、簡易提案書を作成します。";
-                extractedInfo.isComplete = true;
-                extractedInfo.purposeAndWork = extractedInfo.purposeAndWork || "〇〇部品の組立";
-                extractedInfo.taktAndAutomation = extractedInfo.taktAndAutomation || "全自動でタクト10秒";
-                extractedInfo.mainProcess = "主要加工はプレス、重要機能は画像検査";
-                extractedInfo.environmentAndUtilities = "一般工場、電源AC200V、エア圧0.5MPa";
-                extractedInfo.issuesAndBudget = "課題は生産性向上、予算500万円";
-                extractedInfo.deviceName = "AI提案型 自動組立機デモ"; // result.htmlで使うための仮データ
-                extractedInfo.overview = `ユーザー様との対話に基づき、${extractedInfo.purposeAndWork}を目的とし、${extractedInfo.taktAndAutomation}を目指す設備を提案します。`;
-                extractedInfo.mainFunctions = [extractedInfo.mainProcess, "自動部品供給", "完成品自動排出"];
-                extractedInfo.environment = [extractedInfo.environmentAndUtilities];
-                extractedInfo.expectations = extractedInfo.issuesAndBudget;
-                extractedInfo.budget = "500万円";
-
-
-            } else if (!extractedInfo.purposeAndWork && (userMessage.includes("組立") || userMessage.includes("検査") || userMessage.includes("自動化"))) {
-                aiResponse += "\nまず、この設備で実現したい「目的」と、扱いたい「ワーク（製品）」について具体的に教えていただけますか？ (例: 基板への部品実装、金属部品の外観検査など)";
-            } else if (extractedInfo.purposeAndWork && !extractedInfo.taktAndAutomation) {
-                aiResponse += "\nありがとうございます。次に、目標とする「生産量（例：1時間あたり何個）」または「タクトタイム（1つあたり何秒）」と、ご希望の「自動化レベル（全自動、半自動、手動など）」を教えてください。";
-            } else if (extractedInfo.taktAndAutomation && !extractedInfo.mainProcess) {
-                aiResponse += "\n承知いたしました。では、この設備で行う「最も主要となる加工や検査の内容」と、その他に「重要な機能」があれば教えてください。(例: ネジ締め、溶接、寸法測定、NG品排出など)";
-            } else if (extractedInfo.mainProcess && !extractedInfo.environmentAndUtilities) {
-                aiResponse += "\n設備の「設置場所の環境（クリーンルーム有無、広さなど）」や「ユーティリティ（電源、エア圧など）」について特別な条件はありますか？";
-            } else if (extractedInfo.environmentAndUtilities && !extractedInfo.issuesAndBudget) {
-                 aiResponse += "\n最後に、現状どのような「課題」をお持ちで、この設備でどう解決したいか、また、おおよその「ご予算感」があればお聞かせいただけますでしょうか？";
-            } else {
-                aiResponse += "\n他に何か補足事項やご要望はございますか？なければ「完了」と入力してください。";
-                // 仮に全項目埋まったことにする（実際のAIならもっと賢く判断）
-                if(extractedInfo.purposeAndWork && extractedInfo.taktAndAutomation && extractedInfo.mainProcess && extractedInfo.environmentAndUtilities && extractedInfo.issuesAndBudget) {
-                     // extractedInfo.isComplete = true; // 完了と入力されるまで待つ
-                }
-            }
-            return { aiResponse, extractedInfo };
-        }
-
+        // 開発用のダミーAPI応答を生成する関数 getDummyApiResponse は削除されました。
 
         function appendMessage(text, sender) {
             const messageDiv = document.createElement('div');

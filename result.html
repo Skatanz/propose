@@ -325,7 +325,9 @@
         }
 
         // フォーム送信時の処理（バリデーションなど）
-        document.getElementById('contactForm').addEventListener('submit', function(event) {
+        document.getElementById('contactForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // デフォルトのフォーム送信をキャンセル
+
             let isValid = true;
             const requiredFields = ['name', 'company', 'email'];
             requiredFields.forEach(fieldId => {
@@ -348,12 +350,48 @@
 
             if (!isValid) {
                 alert('赤枠の必須項目を入力し、個人情報保護方針に同意してください。');
-                event.preventDefault(); // 送信を中止
-            } else {
-                // ここでバックエンドにフォームデータを送信する処理を実際には行う
-                // 今回は thankyou.html へ遷移するだけ
-                alert('お申し込みありがとうございます。\n（実際にはここでデータが送信され、thankyou.htmlへ遷移します）');
-                // localStorage.removeItem('aiChatSummary'); // 送信後、不要ならクリア
+                return;
+            }
+
+            const name = document.getElementById('name').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+
+            // localStorageからチャットで収集した情報を取得
+            const chatSummary = JSON.parse(localStorage.getItem('aiChatSummary'));
+            const sessionId = chatSummary ? chatSummary.sessionId : null; // hearing.htmlからsessionIdが連携されている想定
+
+            const formData = {
+                name: name,
+                company: company,
+                email: email,
+                phone: phone,
+                sessionId: sessionId // バックエンドにsessionIdを渡す
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: "送信中にエラーが発生しました。" }));
+                    throw new Error(`APIエラー: ${response.status} - ${errorData.error || errorData.detail || response.statusText}`);
+                }
+
+                // 成功した場合
+                // alert('お申し込みありがとうございます！担当者からの連絡をお待ちください。'); // アラートは任意
+                localStorage.removeItem('aiChatSummary'); // 送信後、不要ならクリア
+                window.location.href = 'thankyou.html'; // thankyou.htmlへ遷移
+
+            } catch (error) {
+                console.error('フォーム送信エラー:', error);
+                alert(`送信中にエラーが発生しました。\n${error.message}\nお手数ですが、しばらくしてから再度お試しいただくか、管理者にご連絡ください。`);
             }
         });
     </script>
