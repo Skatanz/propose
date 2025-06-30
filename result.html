@@ -325,7 +325,9 @@
         }
 
         // フォーム送信時の処理（バリデーションなど）
-        document.getElementById('contactForm').addEventListener('submit', function(event) {
+        document.getElementById('contactForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // デフォルトのフォーム送信をキャンセル
+
             let isValid = true;
             const requiredFields = ['name', 'company', 'email'];
             requiredFields.forEach(fieldId => {
@@ -333,6 +335,7 @@
                 if (!field.value.trim()) {
                     isValid = false;
                     field.style.borderColor = '#ff4500'; // 強調色でボーダー
+                    // エラーメッセージ表示用の要素があれば、ここにメッセージを挿入
                 } else {
                     field.style.borderColor = '#ccc';
                 }
@@ -341,19 +344,54 @@
             const privacyPolicy = document.getElementById('privacyPolicy');
             if (!privacyPolicy.checked) {
                 isValid = false;
-                privacyPolicy.parentElement.style.color = '#ff4500'; // ラベルを赤く
+                // エラーメッセージ表示用の要素があれば、ここにメッセージを挿入
+                privacyPolicy.parentElement.style.color = '#ff4500';
             } else {
                 privacyPolicy.parentElement.style.color = '#333';
             }
 
             if (!isValid) {
                 alert('赤枠の必須項目を入力し、個人情報保護方針に同意してください。');
-                event.preventDefault(); // 送信を中止
-            } else {
-                // ここでバックエンドにフォームデータを送信する処理を実際には行う
-                // 今回は thankyou.html へ遷移するだけ
-                alert('お申し込みありがとうございます。\n（実際にはここでデータが送信され、thankyou.htmlへ遷移します）');
-                // localStorage.removeItem('aiChatSummary'); // 送信後、不要ならクリア
+                return; // バリデーションエラーがあればここで処理終了
+            }
+
+            const name = document.getElementById('name').value;
+            const companyName = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const phoneNumber = document.getElementById('phone').value;
+
+            const chatSummaryData = JSON.parse(localStorage.getItem('aiChatSummary'));
+            const sessionId = chatSummaryData ? chatSummaryData.sessionId : null;
+
+            const formData = {
+                name,
+                companyName,
+                email,
+                phoneNumber,
+                sessionId // バックエンドが期待するsessionIdを含める
+            };
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) { // ステータスコード 200-299
+                    // const responseData = await response.json(); // 必要であればレスポンスデータも利用
+                    alert('お申し込みありがとうございます！担当者より追ってご連絡いたします。');
+                    localStorage.removeItem('aiChatSummary'); // 送信成功後、不要ならクリア
+                    window.location.href = 'thankyou.html'; // サンキューページへ遷移
+                } else {
+                    const errorData = await response.json().catch(() => ({ error: `サーバーエラーが発生しました (HTTP ${response.status})。時間をおいて再度お試しください。` }));
+                    alert(`送信に失敗しました: ${errorData.error || '不明なエラー'}`);
+                }
+            } catch (error) {
+                console.error('お問い合わせフォーム送信エラー:', error);
+                alert('お問い合わせの送信中にネットワークエラーが発生しました。しばらくしてから再度お試しください。');
             }
         });
     </script>
