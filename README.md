@@ -8,7 +8,7 @@
 
 ### 必要なもの
 - Python 3.8以上
-- PostgreSQL データベース
+- MySQL データベース (バージョン 5.7 以降推奨)
 
 ### セットアップ手順
 1. **リポジトリのクローン:**
@@ -35,17 +35,30 @@
      ```
      もし `.env.example` がなければ、手動で `.env` ファイルをプロジェクトルートに作成してください。
    - `.env` ファイルを開き、以下の情報を設定します。
+     - `FLASK_SECRET_KEY`: Flaskセッション管理用の任意の秘密鍵 (例: `your_very_secret_flask_key`)
      - `GOOGLE_API_KEY`: あなたのGoogle Gemini APIキーを設定してください。
-     - `DB_HOST`: PostgreSQLデータベースのホスト名 (デフォルト: `localhost`)
-     - `DB_PORT`: PostgreSQLデータベースのポート (デフォルト: `5432`)
+     - `DB_HOST`: MySQLデータベースのホスト名 (デフォルト: `localhost`)
+     - `DB_PORT`: MySQLデータベースのポート (デフォルト: `3306`)
      - `DB_NAME`: 使用するデータベース名 (例: `ai_concierge_db`)
-     - `DB_USER`: データベースのユーザー名
-     - `DB_PASSWORD`: データベースのパスワード
+     - `DB_USER`: MySQLデータベースのユーザー名
+     - `DB_PASSWORD`: MySQLデータベースのパスワード
      **注意:** `.env` ファイルはGit管理に含めないでください (`.gitignore` に追加推奨)。
 
+   参考となる `.env` ファイルの例:
+   ```env
+   FLASK_SECRET_KEY="your_random_secret_key_here"
+   GOOGLE_API_KEY="YOUR_GEMINI_API_KEY_HERE"
+   DB_HOST="localhost"
+   DB_PORT="3306"
+   DB_NAME="ai_concierge_db"
+   DB_USER="your_mysql_user"
+   DB_PASSWORD="your_mysql_password"
+   ```
+
 5. **データベースの準備:**
-   - 設定した `DB_NAME` でPostgreSQLデータベースが作成されていることを確認してください。
-   - 必要なテーブルは、初回起動時に自動的に作成されるか、別途マイグレーションスクリプトが必要になる場合があります（開発初期は `app.py` 内で作成を試みます）。
+   - 設定した `DB_NAME` でMySQLデータベースが作成されており、`DB_USER` がそのデータベースへの適切な権限を持っていることを確認してください。
+   - 文字コードは `utf8mb4` を推奨します。
+   - 必要なテーブルは、アプリケーションの初回起動時に自動的に作成されるように実装されています (`app.py`内の`initial_database_setup`関数経由)。
 
 ### 開発サーバーの実行
 開発時には、以下のコマンドでFlask開発サーバーを起動できます。
