@@ -101,28 +101,32 @@ DEFAULT_EXTRACTED_INFO = {
     **DEFAULT_RESULT_INFO_KEYS # result.html向けのキーもデフォルトに含める
 }
 
-@app.before_first_request
+# @app.before_first_request # Flask 2.x以降では廃止
 def initial_database_setup():
     """アプリケーションの最初のリクエストの前にデータベースを初期化します。"""
+    # この関数はアプリケーションコンテキスト内で呼び出す必要がある
     logger.info("アプリケーション初回起動時のデータベース初期化処理を開始します。")
     try:
         # 環境変数のチェック
         if not all([db_utils.DB_USER, db_utils.DB_PASSWORD, db_utils.DB_NAME]):
             logger.error("データベース接続情報（ユーザー名、パスワード、データベース名）が.envファイルに正しく設定されていません。")
-            # ここでアプリケーションを停止させるか、エラーページを表示するなどの処理も検討可能
             return
 
         # 接続テストと初期化
-        conn_test = db_utils.get_db_connection() # これが失敗すると例外発生
+        conn_test = db_utils.get_db_connection()
         logger.info(f"データベース ({db_utils.DB_NAME} on {db_utils.DB_HOST}:{db_utils.DB_PORT}) 接続テスト成功。")
         conn_test.close()
         db_utils.initialize_db()
         logger.info("データベースの初期化処理が完了しました。")
     except Exception as e:
         logger.error(f"データベース初期化中に致命的なエラーが発生しました: {e}", exc_info=True)
-        # 実際のアプリケーションでは、ここでエラーをユーザーに通知する方法を検討する
-        # (例: エラーページへのリダイレクト、メンテナンスモード表示など)
-        # ここでは、起動時のエラーとしてログに残すのみとする。
+
+# アプリケーションの初期化時にデータベースセットアップを実行
+# Flaskアプリケーションのインスタンスが作成された後、かつ最初のリクエスト処理前 (のようなタイミング)
+# 実際には、`app.run()` の前や、アプリケーションファクトリパターンを使っている場合はその中で行う。
+# ここでは、`app`インスタンス作成後にコンテキストを作って呼び出す。
+with app.app_context():
+    initial_database_setup()
 
 
 @app.route('/api/chat', methods=['POST'])
