@@ -156,7 +156,7 @@ Gemini API が期待される役割（AI設備仕様コンシェルジュ）を�
 *   **フレームワーク:** Flask または FastAPI
     *   Flask: シンプルで学習コストが低い。小～中規模APIに適している。
     *   FastAPI: 高速で、型ヒントによるデータ検証や自動APIドキュメント生成機能が強力。非同期処理にも対応。
-*   **データベース:** PostgreSQL
+*   **データベース:** MySQL
 *   **Gemini API Client:** Google の Python クライアントライブラリ (`google-generativeai`)
 *   **その他ライブラリ:**
     *   `python-dotenv`: 環境変数管理 (APIキーなど)
