@@ -133,5 +133,3 @@ if __name__ == "__main__":
     print("If no errors, database schema should be ready.")
     print("Please ensure your DATABASE_URL in .env is correctly configured.")
     print("Example DATABASE_URL: postgresql://username:password@localhost:5432/mydatabase")
-
-"""
