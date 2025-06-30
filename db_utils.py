@@ -279,7 +279,6 @@ if __name__ == '__main__':
         except Exception as e_gen:
             print(f"予期せぬエラーが発生しました: {e_gen}")
 
-```python
 import os
 import psycopg2
 import psycopg2.extras # For dict cursor
@@ -612,7 +611,7 @@ if __name__ == '__main__':
         except Exception as e_gen:
             logger.error(f"予期せぬエラーが発生しました: {e_gen}")
             print(f"予期せぬエラーが発生しました: {e_gen}")
-``````python
+
 import os
 import psycopg2
 import psycopg2.extras # For dict cursor
@@ -946,4 +945,3 @@ def add_user(name, company_name, email, phone_number=None, session_id_to_link=No
     finally:
         if conn:
             conn.close()
-```
