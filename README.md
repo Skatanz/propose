@@ -7,7 +7,7 @@
 ## バックエンド開発について
 
 ### 必要なもの
-- Python 3.8以上
+- Python 3.9 以上 (例: Python 3.9.13)
 - MySQL データベース (バージョン 5.7 以降推奨)
 
 ### セットアップ手順
@@ -16,13 +16,24 @@
    git clone <リポジトリURL>
    cd <リポジトリ名>
    ```
-2. **Python仮想環境の作成と有効化:**
+2. **Python仮想環境の作成と有効化 (Python 3.9以上を使用):**
+   特定のPythonバージョン (例: 3.9) を指定する場合:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/macOSの場合
-   # venv\Scripts\activate    # Windowsの場合
+   python3.9 -m venv .venv
+   # または py -3.9 -m venv .venv (Windowsでpyランチャー使用時)
    ```
-   既に `venv` ディレクトリが存在する場合は、有効化のみ行います。
+   システムデフォルトのPython 3.9以上を使用する場合:
+   ```bash
+   python -m venv .venv
+   ```
+   仮想環境の有効化:
+   ```bash
+   # Linux/macOSの場合
+   source .venv/bin/activate
+   # Windowsの場合
+   .venv\Scripts\activate
+   ```
+   既に `.venv` ディレクトリが存在し、適切なPythonバージョンで作成されている場合は、有効化のみ行います。
 
 3. **必要なライブラリのインストール:**
    ```bash

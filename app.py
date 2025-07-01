@@ -128,6 +128,28 @@ def initial_database_setup():
 with app.app_context():
     initial_database_setup()
 
+# HTMLファイルを提供するためのルート
+from flask import send_from_directory
+
+@app.route('/')
+def index_route(): # 関数名を index から index_route に変更 (Pythonの予約語と衝突する可能性を避ける)
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:filename>')
+def serve_html(filename):
+    # hearing.html, result.html, thankyou.html, index.html を提供
+    # index.html はルートでも提供されるが、直接 /index.html でもアクセス可能にする
+    allowed_files = ['hearing.html', 'result.html', 'thankyou.html', 'index.html']
+    if filename in allowed_files:
+        return send_from_directory('.', filename)
+    # Faviconなどの一般的なリクエストに対しては404を返す
+    if filename == 'favicon.ico':
+        return jsonify({"error": "File not found"}), 404
+
+    # それ以外の不明なファイルリクエストも404
+    logger.warning(f"Unknown file requested: {filename}")
+    return jsonify({"error": "File not found"}), 404
+
 
 @app.route('/api/chat', methods=['POST'])
 def chat_handler():
