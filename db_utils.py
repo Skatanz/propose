@@ -1,3 +1,4 @@
+```python
 import os
 import mysql.connector
 import logging
@@ -8,7 +9,7 @@ load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306") # MySQLのデフォルトポート
-DB_NAME = os.getenv("DB_NAME")
+DB_NAME = os.getenv("DB_NAME", "ai_concierge_db")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
@@ -388,3 +389,4 @@ if __name__ == '__main__':
         except Exception as e_gen:
             logger.error(f"予期せぬエラー: {e_gen}", exc_info=True)
 
+```
