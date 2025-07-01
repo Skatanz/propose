@@ -1,3 +1,4 @@
+```python
 import os
 import mysql.connector
 import logging
@@ -387,3 +388,5 @@ if __name__ == '__main__':
             logger.error(f"MySQLデータベース処理中にエラー: {e}")
         except Exception as e_gen:
             logger.error(f"予期せぬエラー: {e_gen}", exc_info=True)
+
+```
